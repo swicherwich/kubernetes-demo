@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hello-ml
+  labels:
+    app: hello-ml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hello-ml
+  template:
+    metadata:
+      labels:
+        app: hello-ml
+    spec:
+      containers:
+        - name: hello-ml
+          image: hashicorp/http-echo:1.0
+          args:
+            - "-text=Hello from the Kustomize base"
+          ports:
+            - containerPort: 5678

@@ -1,0 +1,42 @@
+# Values for the community-charts/mlflow chart (burakince/mlflow image).
+# Minimal setup for local minikube: no external DB, no S3.
+# NOTE: metadata is kept in memory, so runs are lost if the pod restarts.
+# For persistence see values-postgres.yaml.
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80          # port-forward maps local 5000 -> service port 80
+
+# The chart runs with a read-only root filesystem, and only /tmp is writable.
+# Point the artifact paths there so the server can start.
+artifactRoot:
+  defaultArtifactRoot: /tmp/mlruns
+  defaultArtifactsDestination: /tmp/mlartifacts
+
+# By default `mlflow server` starts 4 worker processes and each one loads the full
+# app, which together exceed the memory limit (OOMKilled). One worker is enough for
+# a demo, and it is also required with the in-memory SQLite store: every worker
+# would otherwise get its own separate empty database.
+extraArgs:
+  workers: "1"
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 1Gi
+  limits:
+    memory: 4Gi
+
+# Give the app more time to start on a laptop before probes restart it.
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 30
+  timeoutSeconds: 5
+  failureThreshold: 5
+readinessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  failureThreshold: 10

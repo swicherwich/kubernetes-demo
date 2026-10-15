@@ -1,0 +1,25 @@
+# Optional: persistent metadata in PostgreSQL (bundled subchart).
+# The chart already points the Postgres image to bitnamilegacy as a workaround
+# for Bitnami's catalog changes, so the image pull should work on minikube.
+# The password below is for a LOCAL DEMO ONLY. In real clusters use Kubernetes
+# Secrets instead of plain values.
+
+replicaCount: 1
+
+service:
+  type: ClusterIP
+  port: 80
+
+backendStore:
+  databaseMigration: true
+  databaseConnectionCheck: true
+
+postgresql:
+  enabled: true
+  auth:
+    username: mlflow
+    password: mlflow-demo-pass
+    database: mlflow
+  primary:
+    persistence:
+      enabled: true
